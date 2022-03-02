@@ -1,0 +1,68 @@
+# obelezavanje pozicije figure
+    matrica 8x8, krece od 1-8
+    ako je pozicija 0x0 onda ne postoji
+
+side to move - 1/0
+
+white long castle - 1/0
+white short castle - 1/0
+black long castle - 1/0
+black short castle - 1/0
+
+white queens num
+white rooks num
+white bishops num
+white knights num
+white pawns num
+black queens num
+black rooks num
+black bishops num
+black knights num
+black pawns num
+# white positions + lowest valued attacker and defender for each
+    pawn1 pos - e2 ili None 
+    pawn2 pos
+    pawn3 pos
+    pawn4 pos
+    pawn5 pos
+    pawn6 pos
+    pawn7 pos
+    pawn8 pos
+    rook1 pos
+    rook2 pos
+    queen pos
+    bishop1 pos
+    bishop2 pos
+    knight1 pos
+    knight2 pos
+    king pos
+# black positions + lowest valued attacker and defender for each
+    pawn1 pos - e2 ili None
+    pawn2 pos
+    pawn3 pos
+    pawn4 pos
+    pawn5 pos
+    pawn6 pos
+    pawn7 pos
+    pawn8 pos
+    rook1 pos
+    rook2 pos
+    queen pos
+    bishop1 pos
+    bishop2 pos
+    knight1 pos
+    knight2 pos
+    king pos
+# sliding pieces mobility
+    white queen - 8 fields (8 directions)
+    white bishop1 - 4 fields
+    white bishop2 - 4 fields
+    white rook1 - 4 fields
+    white rook2 - 4 fields
+    black queen - 8 fields (8 directions)
+    black bishop1 - 4 fields
+    black bishop2 - 4 fields
+    black rook1 - 4 fields
+    black rook2 - 4 fields
+# lowest attacker and defender of each square
+    0-64 x 2
