@@ -28,8 +28,10 @@ def get_positional_features_of_pieces(color : Color, board : Board, piece_type :
     bitmap_of_pieces = board.pieces(piece_type, color).tolist()
 
     positional_features = []
+    num_of_pieces = 0
     for i in range(0, len(bitmap_of_pieces)): 
         if bitmap_of_pieces[i]:
+            num_of_pieces += 1
             positional_features.extend(get_matrix_pos(i) + get_lowest_valued_attacker_of_piece(color, i, board)  # ovo ce biti ko ga brani
             + get_lowest_valued_attacker_of_piece(WHITE if color == BLACK else BLACK, i, board))  # ovo ce biti ko ga napada
             
@@ -38,8 +40,11 @@ def get_positional_features_of_pieces(color : Color, board : Board, piece_type :
         return positional_features
 
     # svake figure ima max 8 - ovo ukljucuje i pijune, ali i bas figure (sem kralja)
-    for i in range(len(positional_features), 8):
-        positional_features.extend([-1, -1])
+    # u ovakvom slucaju vodimo racuna o tome da postoji mogucnost da ima 8 komada svih figura osim kralja
+    # TODO probaj da izmenis ovo kasnije, mozda da se zakuca na max 2 figure kod obicnih, sem kod kraljice i kralja
+    for i in range(num_of_pieces, 8):
+        positional_features.extend([-1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]) # prva dva broja su pozicija (-1 i -1 pa ne postoji figura), a ostalo nule
+        # da bi bilo neutralno
     
     return positional_features
 
@@ -48,84 +53,50 @@ def extract_feautre(chess_board : Board):
     features = []
 
     # statistic numbers
-    features_I = []
+
     # side to move: 1 if white, 0 if black
-    features_I.append(1 if chess_board.turn else 0)
+    features.append(1 if chess_board.turn else 0)
     # white long castle
-    features_I.append(1 if chess_board.has_queenside_castling_rights(WHITE) else 0)
+    features.append(1 if chess_board.has_queenside_castling_rights(WHITE) else 0)
     # white short castle
-    features_I.append(1 if chess_board.has_kingside_castling_rights(WHITE) else 0)
+    features.append(1 if chess_board.has_kingside_castling_rights(WHITE) else 0)
     # black long castle
-    features_I.append(1 if chess_board.has_queenside_castling_rights(BLACK) else 0)
+    features.append(1 if chess_board.has_queenside_castling_rights(BLACK) else 0)
     # black short castle
-    features_I.append(1 if chess_board.has_kingside_castling_rights(BLACK) else 0)
+    features.append(1 if chess_board.has_kingside_castling_rights(BLACK) else 0)
     # number of pieces
-    features_I.append(len(chess_board.pieces(QUEEN, WHITE)))
-    features_I.append(len(chess_board.pieces(ROOK, WHITE)))
-    features_I.append(len(chess_board.pieces(BISHOP, WHITE)))
-    features_I.append(len(chess_board.pieces(KNIGHT, WHITE)))
-    features_I.append(len(chess_board.pieces(PAWN, WHITE)))
-    features_I.append(len(chess_board.pieces(QUEEN, BLACK)))
-    features_I.append(len(chess_board.pieces(ROOK, BLACK)))
-    features_I.append(len(chess_board.pieces(BISHOP, BLACK)))
-    features_I.append(len(chess_board.pieces(KNIGHT, BLACK)))
-    features_I.append(len(chess_board.pieces(PAWN, BLACK)))
-    # print("\nFEATURES 1, len: " + str(len(features_I)) + "\n" + str(features_I)  + "\n")
+    features.append(len(chess_board.pieces(QUEEN, WHITE)))
+    features.append(len(chess_board.pieces(ROOK, WHITE)))
+    features.append(len(chess_board.pieces(BISHOP, WHITE)))
+    features.append(len(chess_board.pieces(KNIGHT, WHITE)))
+    features.append(len(chess_board.pieces(PAWN, WHITE)))
+    features.append(len(chess_board.pieces(QUEEN, BLACK)))
+    features.append(len(chess_board.pieces(ROOK, BLACK)))
+    features.append(len(chess_board.pieces(BISHOP, BLACK)))
+    features.append(len(chess_board.pieces(KNIGHT, BLACK)))
+    features.append(len(chess_board.pieces(PAWN, BLACK)))
 
 
     # positions
-    features_II = []
 
-    features_II.extend(get_positional_features_of_pieces(WHITE, chess_board, PAWN))
-    features_II.extend(get_positional_features_of_pieces(WHITE, chess_board, ROOK))
-    features_II.extend(get_positional_features_of_pieces(WHITE, chess_board, BISHOP))
-    features_II.extend(get_positional_features_of_pieces(WHITE, chess_board, KNIGHT))
-    features_II.extend(get_positional_features_of_pieces(WHITE, chess_board, QUEEN))
-    features_II.extend(get_positional_features_of_pieces(WHITE, chess_board, KING))
+    features.extend(get_positional_features_of_pieces(WHITE, chess_board, PAWN))
+    features.extend(get_positional_features_of_pieces(WHITE, chess_board, ROOK))
+    features.extend(get_positional_features_of_pieces(WHITE, chess_board, BISHOP))
+    features.extend(get_positional_features_of_pieces(WHITE, chess_board, KNIGHT))
+    features.extend(get_positional_features_of_pieces(WHITE, chess_board, QUEEN))
+    features.extend(get_positional_features_of_pieces(WHITE, chess_board, KING))
 
-    features_II.extend(get_positional_features_of_pieces(BLACK, chess_board, PAWN))
-    features_II.extend(get_positional_features_of_pieces(BLACK, chess_board, ROOK))
-    features_II.extend(get_positional_features_of_pieces(BLACK, chess_board, BISHOP))
-    features_II.extend(get_positional_features_of_pieces(BLACK, chess_board, KNIGHT))
-    features_II.extend(get_positional_features_of_pieces(BLACK, chess_board, QUEEN))
-    features_II.extend(get_positional_features_of_pieces(BLACK, chess_board, KING))
-    # print("\nFEATURES 2, len: " + str(len(features_II)) + "\n" + str(features_II) + "\n")
-    # print('\nfeatureII list lens')
-    # dicktionary = {}
-    # for el in features_II:
-    #     if len(el) in dicktionary:
-    #         dicktionary[len(el)] += 1
-    #     else:
-    #         dicktionary[len(el)] = 1
-    # print(dicktionary)
-    # print("\n\n")
+    features.extend(get_positional_features_of_pieces(BLACK, chess_board, PAWN))
+    features.extend(get_positional_features_of_pieces(BLACK, chess_board, ROOK))
+    features.extend(get_positional_features_of_pieces(BLACK, chess_board, BISHOP))
+    features.extend(get_positional_features_of_pieces(BLACK, chess_board, KNIGHT))
+    features.extend(get_positional_features_of_pieces(BLACK, chess_board, QUEEN))
+    features.extend(get_positional_features_of_pieces(BLACK, chess_board, KING))
 
     # square positional values
-    features_III = get_squares_attackers_and_defenders(chess_board)
-    # print("\nFEATURES 3, len: " + str(len(features_III)) + "\n" + str(features_III) + "\n")
-    # print('\nfeatureIII list lens')
-    # dicktionary = {}
-    # for el in features_III:
-    #     if len(el) in dicktionary:
-    #         dicktionary[len(el)] += 1
-    #     else:
-    #         dicktionary[len(el)] = 1
-    # print(dicktionary)
-    # print("\n\n")
-    #return [features_I, features_II, features_III]
-    listica = []
-    for f in features_I:
-        listica.append(f)
+    features.extend(get_squares_attackers_and_defenders(chess_board))
     
-    for f in features_II:
-        listica.append(f)
-
-    for f in features_III:
-        listica.append(f)
-    
-    for _ in range(len(listica), 1231): # todo resi ovo, ovo je samo privremeno, ne vraca uvek isti
-        listica.append(1)
-    return listica 
+    return features 
 
 if __name__ == '__main__':
     board = chess.Board()
