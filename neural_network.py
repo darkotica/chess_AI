@@ -28,7 +28,7 @@ def get_dataset_partitions_tf(ds, train_split=0.8):
     return train_ds, val_ds
 
 def get_feautures_from_FEN(fen):
-    stringic_valjda = bytes.decode(fen[0].numpy())
+    stringic_valjda = fen.astype(str)[0]
     board_chess = chess.Board(stringic_valjda)
     features = extract_feautre(board_chess)
     return np.asarray(features, dtype=np.float32)
@@ -42,13 +42,17 @@ def handle_y(y):
 
 datasetic = tf.data.experimental.make_csv_dataset(
     'training_data/archive/chessData.csv',
-    batch_size=1,
-    num_epochs=1,
+    batch_size=256,
     label_name='Evaluation'
 )
-datasetic_aug = datasetic.map(lambda x, y: (tf.py_function(get_feautures_from_FEN, [x['FEN']], Tout=[tf.float32]),  handle_y(y)))
-datasetic_aug = datasetic_aug.map(lambda x,y: ((x[:, :15], x[:,15:1148+15], x[:, 1148+15:]), y))
+datasetic_aug = datasetic.map(lambda x, y: (tf.numpy_function(get_feautures_from_FEN, [x['FEN']], Tout=[tf.float32]),  handle_y(y)))
+datasetic_aug = datasetic_aug.map(lambda x,y: ({'input_1': x[:, :15], 'input_2': x[:,15:1148+15], 'input_3': x[:, 1148+15:]}, y))
+datasetic_aug = datasetic_aug.map(lambda x,y: ({'input_1': tf.reshape(x['input_1'], [1,15]), 'input_2': tf.reshape(x['input_2'], [1,1148]), 'input_3': tf.reshape(x['input_3'], [1,768])}, tf.reshape(y, [1, 1])))
 dataset_train, dataset_val = get_dataset_partitions_tf(datasetic_aug)
+
+#print(datasetic_aug.element_spec)
+# for el in datasetic_aug:
+#     print(el)
 
 # print("el example")
 # datasetic = datasetic_aug.take(20)
@@ -62,14 +66,14 @@ dataset_train, dataset_val = get_dataset_partitions_tf(datasetic_aug)
 # print(shape)
 
 # prvi sloj
-input_1 = Input(shape=(15,))
-input_2 = Input(shape=(1148,))
-input_3 = Input(shape=(768,))
+input_1 = Input(shape=(15,), name="input_1")
+input_2 = Input(shape=(1148,), name="input_2")
+input_3 = Input(shape=(768,), name="input_3")
 
 # drugi sloj
-x_1 = Dense(1024, activation="relu")(input_1)
+x_1 = Dense(256, activation="relu")(input_1)
 
-x_2 = Dense(1024, activation="relu")(input_2)
+x_2 = Dense(2048, activation="relu")(input_2)
 
 x_3 = Dense(1024, activation="relu")(input_3)
 
@@ -88,7 +92,7 @@ model.summary()
 
 print("\nModel created, starting with training\n\n")
 
-history = model.fit(x=dataset_train, validation_data=dataset_val, batch_size=1, epochs=10)
+history = model.fit(x=datasetic_aug, validation_data=datasetic_aug, epochs=10)
 
 model_json = model.to_json()
 with open("model_chess_ai.json", "w") as json_file:
