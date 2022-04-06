@@ -1,9 +1,10 @@
 import chess
 from chess import *
 
+# input: 15, 1148, 768
 
 def get_matrix_pos(index):
-    return [index // 8, index % 8]
+    return [index // 8 + 1, index % 8 + 1]
 
 def get_squares_attackers_and_defenders(board : Board):
     squares_atk_def = []
@@ -17,7 +18,7 @@ def get_lowest_valued_attacker_of_piece(color : Color, index, board : Board): # 
     attackers_mask = board.attackers_mask(color, index)
     attacker_pieces = board.piece_map(mask=attackers_mask)
     if len(attacker_pieces) == 0:
-        return [-1, -1, -1, -1, -1, -1]
+        return [0, 0, 0, 0, 0, 0]
     # pawn, rook, knight, bishop, queen, king
     min_val_figure = min(attacker_pieces.values(), key=lambda x: x.piece_type)
     ret_list = [0, 0, 0, 0, 0, 0]
@@ -41,9 +42,8 @@ def get_positional_features_of_pieces(color : Color, board : Board, piece_type :
 
     # svake figure ima max 8 - ovo ukljucuje i pijune, ali i bas figure (sem kralja)
     # u ovakvom slucaju vodimo racuna o tome da postoji mogucnost da ima 8 komada svih figura osim kralja
-    # TODO probaj da izmenis ovo kasnije, mozda da se zakuca na max 2 figure kod obicnih, sem kod kraljice i kralja
     for i in range(num_of_pieces, 8):
-        positional_features.extend([-1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]) # prva dva broja su pozicija (-1 i -1 pa ne postoji figura), a ostalo nule
+        positional_features.extend([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]) # prva dva broja su pozicija (0 i 0 pa ne postoji figura), a ostalo nule
         # da bi bilo neutralno
     
     return positional_features
