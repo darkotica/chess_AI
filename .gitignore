@@ -1,6 +1,6 @@
 # custom ignores
 training_data/
-results/models/15_768_768_table_input/
+results/
 
 
 # Created by https://www.toptal.com/developers/gitignore/api/python,visualstudiocode
