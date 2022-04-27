@@ -15,17 +15,20 @@ def load_model(model_path, weights_path):
     print("Loaded model from disk")
 
     loaded_model.compile(loss="mean_squared_error", optimizer="adam")
+    #loaded_model.summary()
 
     return loaded_model
 
 if __name__ == "__main__":
-    loaded_model = load_model('results/results_uga_buga/model_chess_ai.json', "results/results_uga_buga/model_chess_ai.h5")
+    loaded_model = load_model('results/models/768_table_input/3/model_chess_ai.json', "results/models/768_table_input/3/model_chess_ai.h5")
     
-    board_chess = Board("8/7k/6p1/3n2P1/p7/4r3/6K1/8 w - - 0 56")
+    board_chess = Board("5k2/pp1Q4/3p1b2/5p2/r2P4/8/4PKR1/3R4 b - - 0 32")
     features = extract_feautre(board_chess)
 
     nn_input = tf.reshape(features, [1, len(features)])
 
     pred = loaded_model(nn_input)
+    pred_f = float(pred)
     print("score: " + str(pred))
+    print("score f:" + str(pred_f))
     
