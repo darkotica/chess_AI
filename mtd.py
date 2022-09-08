@@ -231,6 +231,7 @@ def get_next_move(board, model, depth):
 if __name__ == '__main__':
     model = load_model('working_model/model_chess_ai.json',
                        "working_model/model_chess_ai.h5")
+    model.summary()
 
     # fen = sys.argv[1]
     # depth = int(sys.argv[2]) if len(sys.argv) >= 3 else None # if depth is passed as argument, else its default (4)

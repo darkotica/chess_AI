@@ -20,9 +20,9 @@ def load_model(model_path, weights_path):
     return loaded_model
 
 if __name__ == "__main__":
-    loaded_model = load_model('results/models/768_table_input/3/model_chess_ai.json', "results/models/768_table_input/3/model_chess_ai.h5")
+    loaded_model = load_model('working_model/model_chess_ai.json', "working_model/model_chess_ai.h5")
     
-    board_chess = Board("5k2/pp1Q4/3p1b2/5p2/r2P4/8/4PKR1/3R4 b - - 0 32")
+    board_chess = Board("rnbqkbnr/ppp2ppp/8/3p4/8/5BP1/PPPPPP1P/RNBQK2R w KQkq - 0 5")
     features = extract_feautre(board_chess)
 
     nn_input = tf.reshape(features, [1, len(features)])
